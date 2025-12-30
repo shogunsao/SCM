@@ -45,16 +45,16 @@ const AdminPanel = ({ user, onLogout }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
-        const loanRes = await axios.get('http://localhost:5000/api/loans');
+        const loanRes = await axios.get('https://scm-okjs.onrender.com/api/loans');
         setRequests(loanRes.data);
-        const trustRes = await axios.get('http://localhost:5000/api/trusts');
+        const trustRes = await axios.get('https://scm-okjs.onrender.com/api/trusts');
         setTrusts(trustRes.data);
 
         // Админ бол хэрэглэгчдийг болон логуудыг татна
         if (user?.role === 'admin') {
-            const userRes = await axios.get('http://localhost:5000/api/users');
+            const userRes = await axios.get('https://scm-okjs.onrender.com/api/users');
             setUsersList(userRes.data);
-            const logRes = await axios.get('http://localhost:5000/api/logs');
+            const logRes = await axios.get('https://scm-okjs.onrender.com/api/logs');
             setLogs(logRes.data);
         }
     } catch (error) { console.error(error); }
@@ -64,7 +64,7 @@ const AdminPanel = ({ user, onLogout }) => {
   const handleStatusChange = async (id, newStatus) => {
       if(!window.confirm("Төлөв өөрчлөх үү?")) return;
       try {
-          await axios.put(`http://localhost:5000/api/loans/${id}`, { status: newStatus, adminUser: user });
+          await axios.put(`https://scm-okjs.onrender.com/api/loans/${id}`, { status: newStatus, adminUser: user });
           setRequests(prev => prev.map(req => req._id === id ? { ...req, status: newStatus } : req));
           setSelectedRequest(null);
       } catch (error) { alert("Алдаа гарлаа"); }
@@ -73,7 +73,7 @@ const AdminPanel = ({ user, onLogout }) => {
   const saveContactNote = async () => {
       if(!contactNote) return alert("Тэмдэглэл бичнэ үү");
       try {
-          await axios.put(`http://localhost:5000/api/trusts/${selectedTrust._id}`, { contactNote, adminUser: user });
+          await axios.put(`https://scm-okjs.onrender.com/api/trusts/${selectedTrust._id}`, { contactNote, adminUser: user });
           setTrusts(prev => prev.map(t => t._id === selectedTrust._id ? { ...t, status: 'contacted', contactNote } : t));
           setSelectedTrust(null);
           setContactNote('');
@@ -84,22 +84,22 @@ const AdminPanel = ({ user, onLogout }) => {
   const handlePrint = () => { window.print(); };
 
   // User Functions
-  const handleCreateUser = async () => { if(!newUser.name || !newUser.email || !newUser.password) { alert("Дутуу байна"); return; } try { const response = await axios.post('http://localhost:5000/api/auth/register', { ...newUser, createdBy: user }); alert(response.data.message); setNewUser({ name: '', email: '', password: '', role: 'employee' }); fetchData(); } catch (error) { alert(error.response?.data?.message || "Алдаа"); } };
-  const updateUserStatus = async (targetUserId, newRole, newStatus) => { try { await axios.put(`http://localhost:5000/api/users/${targetUserId}`, { role: newRole, isActive: newStatus, adminUser: user }); fetchData(); } catch (error) {} };
-  const deleteUser = async (targetUserId) => { if(!window.confirm("Устгах уу?")) return; try { await axios.delete(`http://localhost:5000/api/users/${targetUserId}`); fetchData(); } catch (error) {} };
-  const handleChangePassword = async () => { if (!oldPassword || !newPassword || !confirmPassword) return alert("Дутуу байна"); if (newPassword !== confirmPassword) return alert("Таарахгүй байна"); try { const userId = user.id || user._id; const response = await axios.put(`http://localhost:5000/api/auth/change-password/${userId}`, { oldPassword, newPassword }); alert(response.data.message); setOldPassword(''); setNewPassword(''); setConfirmPassword(''); } catch (error) { alert(error.response?.data?.message || "Алдаа"); } };
+  const handleCreateUser = async () => { if(!newUser.name || !newUser.email || !newUser.password) { alert("Дутуу байна"); return; } try { const response = await axios.post('https://scm-okjs.onrender.com/api/auth/register', { ...newUser, createdBy: user }); alert(response.data.message); setNewUser({ name: '', email: '', password: '', role: 'employee' }); fetchData(); } catch (error) { alert(error.response?.data?.message || "Алдаа"); } };
+  const updateUserStatus = async (targetUserId, newRole, newStatus) => { try { await axios.put(`https://scm-okjs.onrender.com/api/users/${targetUserId}`, { role: newRole, isActive: newStatus, adminUser: user }); fetchData(); } catch (error) {} };
+  const deleteUser = async (targetUserId) => { if(!window.confirm("Устгах уу?")) return; try { await axios.delete(`https://scm-okjs.onrender.com/api/users/${targetUserId}`); fetchData(); } catch (error) {} };
+  const handleChangePassword = async () => { if (!oldPassword || !newPassword || !confirmPassword) return alert("Дутуу байна"); if (newPassword !== confirmPassword) return alert("Таарахгүй байна"); try { const userId = user.id || user._id; const response = await axios.put(`https://scm-okjs.onrender.com/api/auth/change-password/${userId}`, { oldPassword, newPassword }); alert(response.data.message); setOldPassword(''); setNewPassword(''); setConfirmPassword(''); } catch (error) { alert(error.response?.data?.message || "Алдаа"); } };
 
   // 2FA Functions
   const setup2FA = async () => {
       try {
-          const res = await axios.post('http://localhost:5000/api/auth/2fa/setup', { userId: user.id || user._id });
+          const res = await axios.post('https://scm-okjs.onrender.com/api/auth/2fa/setup', { userId: user.id || user._id });
           setQrCode(res.data.qrCode);
       } catch (e) { alert("Алдаа гарлаа: " + e.message); }
   };
 
   const verify2FA = async () => {
       try {
-          const res = await axios.post('http://localhost:5000/api/auth/2fa/verify', { userId: user.id || user._id, token: twoFACode });
+          const res = await axios.post('https://scm-okjs.onrender.com/api/auth/2fa/verify', { userId: user.id || user._id, token: twoFACode });
           alert(res.data.message);
           setQrCode(null);
           setTwoFACode('');

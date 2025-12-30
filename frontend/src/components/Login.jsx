@@ -17,7 +17,7 @@ const Login = ({ onLogin, onBack }) => {
 
     try {
         // Backend руу хүсэлт илгээх (Эхний удаа token хоосон байна)
-        const response = await axios.post('http://localhost:5000/api/auth/login', {
+        const response = await axios.post('https://scm-okjs.onrender.com/api/auth/login', {
             email: formData.email,
             password: formData.password,
             token: formData.token
